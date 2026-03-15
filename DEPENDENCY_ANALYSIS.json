@@ -1,0 +1,341 @@
+{
+  "files": [
+    {
+      "path": "DEPENDENCY_ANALYSIS.json",
+      "content": "Full dependency analysis and canonical version identification for discord-ai-bot-czech project",
+      "description": "Comprehensive analysis of file dependencies, duplicates, and canonical versions"
+    }
+  ],
+  "summary": "Analyzed file dependencies across root/, src/, bot/ directories. Identified canonical versions and stub files.",
+  "next_steps": [
+    "Remove stub files in src/ that redirect to bot/",
+    "Consolidate duplicate entry points",
+    "Update import paths to use canonical versions"
+  ],
+  "analysis": {
+    "project_structure": {
+      "root_directory": {
+        "description": "Contains main entry points and FastAPI application",
+        "key_files": [
+          "main.py (469 lines) - PRIMARY ENTRY POINT for Discord bot",
+          "app.py (228 lines) - PRIMARY ENTRY POINT for FastAPI admin interface",
+          "bot.py (139 lines) - SIMPLE ENTRY POINT using src.config",
+          "main_enhanced.py (351 lines) - ALTERNATIVE ENTRY POINT with enhanced features",
+          "run_api.py (62 lines) - API server launcher script"
+        ]
+      },
+      "bot_directory": {
+        "description": "Advanced bot implementation with lifecycle management, error handling, and graceful degradation",
+        "canonical_files": [
+          "bot/config_loader.py (434 lines) - Advanced configuration with validation",
+          "bot/errors.py (450 lines) - Comprehensive error handling",
+          "bot/graceful_degradation.py (461 lines) - Graceful degradation manager",
+          "bot/health.py (536 lines) - Health check system",
+          "bot/lifecycle.py (466 lines) - Bot lifecycle management",
+          "bot/interest_filter.py (319 lines) - Message interest filtering",
+          "bot/context_manager.py (298 lines) - Conversation context manager",
+          "bot/cogs/ai_chat.py - AI chat cog",
+          "bot/cogs/admin.py - Admin commands cog",
+          "bot/utils/logger.py - Logging utilities"
+        ],
+        "imports_from": [
+          "src.llm (LLM client factory and providers)",
+          "src.shared_config (shared configuration loader)",
+          "src.ipc (inter-process communication)"
+        ]
+      },
+      "src_directory": {
+        "description": "Source directory with core services, API, and LLM integration",
+        "canonical_files": [
+          "src/config.py (stub - redirects to encrypted vault storage)",
+          "src/shared_config.py (274 lines) - Shared configuration loader",
+          "src/ipc.py (270 lines) - Inter-process communication",
+          "src/credential_vault.py - Encrypted credential storage",
+          "src/credential_loader.py - Credential loading utilities",
+          "src/api/auth.py (274 lines) - Authentication endpoints",
+          "src/api/bot.py (354 lines) - Bot management endpoints",
+          "src/api/config.py (690 lines) - Configuration management endpoints",
+          "src/llm/client.py (242 lines) - LLM client implementation",
+          "src/llm/client_enhanced.py (497 lines) - Enhanced LLM client",
+          "src/llm/providers.py (528 lines) - AI provider implementations",
+          "src/llm/factory.py (134 lines) - LLM client factory",
+          "src/llm/retry_strategy.py (241 lines) - Retry logic",
+          "src/llm/circuit_breaker.py (347 lines) - Circuit breaker pattern",
+          "src/llm/base.py (107 lines) - Base LLM provider interface",
+          "src/llm/exceptions.py (48 lines) - LLM-specific exceptions",
+          "src/llm/language_utils.py (84 lines) - Language utilities"
+        ],
+        "stub_files": [
+          "src/main.py (0 lines) - Stub redirecting to root main.py",
+          "src/bot.py (0 lines) - Stub redirecting to root bot.py",
+          "src/app.py (0 lines) - Stub redirecting to root app.py",
+          "src/errors.py (0 lines) - Stub redirecting to bot/errors.py",
+          "src/health.py (0 lines) - Empty stub",
+          "src/interest_filter.py (0 lines) - Stub redirecting to bot/interest_filter.py",
+          "src/lifecycle.py (0 lines) - Stub redirecting to bot/lifecycle.py",
+          "src/graceful_degradation.py (0 lines) - Stub redirecting to bot/graceful_degradation.py",
+          "src/context_manager.py (0 lines) - Stub redirecting to bot/context_manager.py",
+          "src/client_enhanced.py (0 lines) - Stub redirecting to llm/client_enhanced.py",
+          "src/providers.py (0 lines) - Stub redirecting to llm/providers.py",
+          "src/main_enhanced.py (0 lines) - Stub redirecting to root main_enhanced.py",
+          "src/test_bot_restart.py (0 lines) - Stub",
+          "src/test_imports.py (0 lines) - Stub",
+          "src/config_usage_analysis.py (0 lines) - Stub"
+        ],
+        "duplicate_with_differences": [
+          {
+            "file": "src/retry_strategy.py vs src/llm/retry_strategy.py",
+            "description": "Both are 241 lines but differ in fibonacci calculation (line 92)",
+            "difference": "src/retry_strategy.py uses _fibonacci(attempt + 2), src/llm/retry_strategy.py uses _fibonacci(attempt + 1)",
+            "canonical": "src/llm/retry_strategy.py (within proper module structure)"
+          },
+          {
+            "file": "src/run_api.py vs run_api.py",
+            "description": "src/run_api.py has 109 lines with start_api_server() function, root has 62 lines simpler version",
+            "canonical": "run_api.py (root) - simpler, direct entry point"
+          }
+        ]
+      }
+    },
+    "entry_points": {
+      "discord_bot": [
+        {
+          "file": "main.py",
+          "lines": 469,
+          "status": "PRIMARY",
+          "description": "Full-featured entry point with lifecycle management, IPC, shared config",
+          "imports": [
+            "bot.config_loader",
+            "bot.errors",
+            "bot.graceful_degradation",
+            "bot.lifecycle",
+            "bot.utils.logger",
+            "src.shared_config",
+            "src.ipc",
+            "src.llm.factory"
+          ],
+          "features": [
+            "Advanced bot configuration (AdvancedBotConfig)",
+            "Lifecycle management with hooks",
+            "IPC for admin interface communication",
+            "Shared configuration loader",
+            "Graceful degradation",
+            "Health checks",
+            "Auto-reconnect logic",
+            "Cog loading (bot.cogs.ai_chat, bot.cogs.admin)"
+          ]
+        },
+        {
+          "file": "main_enhanced.py",
+          "lines": 351,
+          "status": "ALTERNATIVE",
+          "description": "Enhanced version with direct bot/error imports, no IPC",
+          "imports": [
+            "bot.config_loader",
+            "bot.errors",
+            "bot.graceful_degradation",
+            "bot.health",
+            "bot.lifecycle",
+            "bot.utils.logger",
+            "src.llm.client"
+          ],
+          "features": [
+            "Advanced bot configuration",
+            "Lifecycle management",
+            "Health checks",
+            "Direct LLM client initialization",
+            "No IPC support"
+          ]
+        },
+        {
+          "file": "bot.py",
+          "lines": 139,
+          "status": "SIMPLE",
+          "description": "Simple entry point using src.config (Settings class)",
+          "imports": [
+            "src.config"
+          ],
+          "features": [
+            "Basic bot with simple Settings",
+            "No advanced lifecycle management",
+            "Direct bot.run() call",
+            "Good for development/testing"
+          ]
+        }
+      ],
+      "fastapi_admin": [
+        {
+          "file": "app.py",
+          "lines": 228,
+          "status": "PRIMARY",
+          "description": "Main FastAPI application with all routers",
+          "imports": [
+            "src.config",
+            "src.api.auth",
+            "src.api.bot",
+            "src.api.config"
+          ],
+          "features": [
+            "Authentication router (/api/auth)",
+            "Bot management router (/api/bot)",
+            "Configuration router (/api/config)",
+            "Static file serving",
+            "CORS middleware",
+            "Health check endpoint",
+            "Lifespan context manager"
+          ]
+        },
+        {
+          "file": "run_api.py",
+          "lines": 62,
+          "status": "LAUNCHER",
+          "description": "Simple script to launch app.py with uvicorn",
+          "imports": [
+            "src.config"
+          ],
+          "features": [
+            "Loads settings and starts uvicorn",
+            "Simple entry point for API server"
+          ]
+        }
+      ]
+    },
+    "import_graph": {
+      "main.py": {
+        "direct_imports": [
+          "bot.config_loader",
+          "bot.errors",
+          "bot.graceful_degradation",
+          "bot.lifecycle",
+          "bot.utils.logger",
+          "src.shared_config",
+          "src.ipc"
+        ],
+        "runtime_imports": [
+          "bot.cogs.ai_chat",
+          "bot.cogs.admin",
+          "src.llm.factory"
+        ],
+        "dependency_chain": "main.py -> bot/* -> src.llm/* -> src.config (vault)"
+      },
+      "app.py": {
+        "direct_imports": [
+          "src.config",
+          "src.api.auth",
+          "src.api.bot",
+          "src.api.config"
+        ],
+        "dependency_chain": "app.py -> src.api/* -> src.config (vault)"
+      },
+      "bot/lifecycle.py": {
+        "imports": [
+          "bot.errors",
+          "bot.graceful_degradation"
+        ]
+      },
+      "bot/cogs/ai_chat.py": {
+        "imports": [
+          "bot.errors",
+          "bot.interest_filter",
+          "bot.context_manager",
+          "src.llm (presumably)"
+        ]
+      },
+      "src/llm/factory.py": {
+        "imports": [
+          "src.llm.client",
+          "src.llm.client_enhanced",
+          "src.llm.providers"
+        ]
+      },
+      "src/api/config.py": {
+        "imports": [
+          "src.config",
+          "src.credential_vault",
+          "src.credential_loader"
+        ]
+      }
+    },
+    "duplicates_summary": {
+      "stub_files_to_remove": [
+        "src/main.py",
+        "src/bot.py",
+        "src/app.py",
+        "src/errors.py",
+        "src/health.py",
+        "src/interest_filter.py",
+        "src/lifecycle.py",
+        "src/graceful_degradation.py",
+        "src/context_manager.py",
+        "src/client_enhanced.py",
+        "src/providers.py",
+        "src/main_enhanced.py",
+        "src/test_bot_restart.py",
+        "src/test_imports.py",
+        "src/config_usage_analysis.py"
+      ],
+      "files_to_consolidate": [
+        {
+          "duplicate": "src/retry_strategy.py",
+          "canonical": "src/llm/retry_strategy.py",
+          "action": "Remove src/retry_strategy.py, use src/llm/retry_strategy.py",
+          "note": "Files differ slightly in fibonacci calculation - canonical version (llm/) uses correct formula"
+        },
+        {
+          "duplicate": "src/run_api.py",
+          "canonical": "run_api.py (root)",
+          "action": "Remove src/run_api.py, keep root version",
+          "note": "Root version is simpler and more appropriate as entry point"
+        }
+      ],
+      "canonical_versions": {
+        "bot_implementation": "bot/ directory (all files)",
+        "llm_integration": "src/llm/ directory (all files)",
+        "api_implementation": "src/api/ directory (all files)",
+        "configuration": "src/shared_config.py + src/credential_vault.py",
+        "main_entry": "main.py (root)",
+        "api_entry": "app.py (root)",
+        "simple_entry": "bot.py (root)"
+      }
+    },
+    "recommendations": {
+      "immediate_actions": [
+        "Remove all stub files in src/ (15 files identified)",
+        "Remove src/retry_strategy.py (use src/llm/retry_strategy.py)",
+        "Remove src/run_api.py (use root run_api.py)",
+        "Update any imports that reference removed stubs"
+      ],
+      "entry_point_consolidation": [
+        "Keep main.py as PRIMARY discord bot entry point",
+        "Keep app.py as PRIMARY FastAPI entry point",
+        "Keep bot.py as SIMPLE/DEVELOPMENT entry point",
+        "Consider removing or documenting main_enhanced.py (alternative implementation)",
+        "Keep run_api.py (root) as API launcher"
+      ],
+      "import_structure": [
+        "Bot implementation: import from bot.*",
+        "LLM functionality: import from src.llm.*",
+        "API endpoints: import from src.api.*",
+        "Configuration: import from src.config, src.shared_config, src.credential_vault",
+        "IPC: import from src.ipc"
+      ],
+      "testing": [
+        "After removing stubs, verify all imports work",
+        "Test both main.py and bot.py entry points",
+        "Test FastAPI with app.py and run_api.py",
+        "Check that examples/ still work with new import paths"
+      ]
+    },
+    "git_history": {
+      "note": "All files created in single initial commit: fc1b4a6 'AI Company: auto-generated project'",
+      "implication": "Stub files were likely created as placeholders and never populated"
+    },
+    "file_count_summary": {
+      "total_python_files": 50,
+      "stub_files": 15,
+      "canonical_files": 35,
+      "duplicates_with_differences": 2,
+      "entry_points": 5
+    }
+  }
+}

@@ -1,0 +1,36 @@
+# Production Configuration Example
+# This file demonstrates how to use YAML configuration files
+# for environment-specific settings
+
+environment: production
+
+# Logging - less verbose in production
+log_level: INFO
+
+# Bot behavior - more conservative in production
+bot_response_threshold: 0.7
+bot_max_history: 40
+
+# Retry configuration - more aggressive in production
+max_retry_attempts: 5
+retry_base_delay: 2.0
+retry_max_delay: 60.0
+
+# Timeouts - longer in production
+llm_timeout: 90.0
+http_timeout: 45.0
+
+# Reconnection - more persistent in production
+max_reconnect_attempts: 10
+reconnect_base_delay: 10.0
+
+# Feature flags - all enabled in production
+enable_message_caching: true
+enable_graceful_degradation: true
+enable_health_checks: true
+enable_metrics: true
+
+# Performance - optimized for production load
+message_queue_size: 200
+worker_threads: 8
+cache_ttl: 7200

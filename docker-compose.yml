@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  discord-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: discord-ai-bot-czech
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override with environment-specific values if needed
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      # Persistent storage for logs
+      - bot-logs:/app/logs
+      # Persistent storage for database
+      - bot-data:/app/data
+      # Optional: mount .env for runtime config updates
+      - ./.env:/app/.env:ro
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()\" || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - bot-network
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+volumes:
+  bot-logs:
+    driver: local
+  bot-data:
+    driver: local
+
+networks:
+  bot-network:
+    driver: bridge

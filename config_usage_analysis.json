@@ -1,0 +1,155 @@
+{
+  "analysis_metadata": {
+    "project": "discord-ai-bot-czech",
+    "analysis_date": "2026-03-15",
+    "total_python_files": 125,
+    "config_related_files": 17,
+    "files_importing_config": 23
+  },
+  "configuration_modules": {
+    "config.py": {
+      "path": "workspace/projects/discord-ai-bot-czech/config.py",
+      "classes": ["Config"],
+      "type": "Simple class-based config",
+      "status": "LEGACY",
+      "usage": "Used only by bot.py"
+    },
+    "src/config.py": {
+      "path": "workspace/projects/discord-ai-bot-czech/src/config.py",
+      "classes": ["Settings"],
+      "type": "Pydantic BaseSettings",
+      "status": "BROKEN - Missing critical functions",
+      "missing_exports": [
+        "get_settings()",
+        "get_config_manager()",
+        "reload_settings()",
+        "BotSettings"
+      ],
+      "missing_methods": [
+        "has_discord_config()",
+        "get_channel_ids_list()",
+        "get_available_llm_providers()",
+        "get_preferred_ai_provider()"
+      ]
+    },
+    "bot/config.py": {
+      "path": "workspace/projects/discord-ai-bot-czech/bot/config.py",
+      "classes": ["BotConfig"],
+      "type": "Pydantic BaseSettings",
+      "status": "UNUSED",
+      "usage": "Exported by bot/__init__.py but not actively used"
+    },
+    "bot/config_loader.py": {
+      "path": "workspace/projects/discord-ai-bot-czech/bot/config_loader.py",
+      "classes": ["AdvancedBotConfig", "ConfigLoader"],
+      "type": "Advanced Pydantic config",
+      "status": "ACTIVE - Primary config for main bot",
+      "usage": "Used by main.py, main_enhanced.py"
+    },
+    "src/shared_config.py": {
+      "path": "workspace/projects/discord-ai-bot-czech/src/shared_config.py",
+      "classes": ["SharedConfigLoader"],
+      "type": "Thread-safe config manager",
+      "status": "ACTIVE",
+      "usage": "Used for hot-reload by main.py and src/api/config.py"
+    }
+  },
+  "dependency_graph": {
+    "broken_dependencies": [
+      {
+        "file": "src/api/config.py",
+        "imports": "get_settings, get_config_manager, reload_settings",
+        "status": "BROKEN",
+        "impact": "CRITICAL"
+      },
+      {
+        "file": "src/api/auth.py",
+        "imports": "get_settings",
+        "status": "BROKEN",
+        "impact": "CRITICAL"
+      },
+      {
+        "file": "app.py",
+        "imports": "get_settings",
+        "status": "BROKEN",
+        "impact": "CRITICAL"
+      }
+    ],
+    "working_dependencies": [
+      {
+        "file": "main.py",
+        "imports": "AdvancedBotConfig, load_config",
+        "from": "bot/config_loader.py",
+        "status": "OK"
+      },
+      {
+        "file": "src/llm/factory.py",
+        "imports": "Settings",
+        "from": "src/config.py",
+        "status": "OK"
+      }
+    ]
+  },
+  "instantiation_patterns": {
+    "direct": [
+      "config = AdvancedBotConfig(**config_dict)",
+      "config = Settings()"
+    ],
+    "factory": [
+      "config = load_config(env_file='.env')",
+      "loader = get_shared_config_loader(project_root)"
+    ],
+    "dependency_injection": [
+      "settings: Settings = Depends(get_settings)  # BROKEN"
+    ]
+  },
+  "field_overlap": {
+    "discord_token": 4,
+    "ai_keys": 4,
+    "bot_language": 3,
+    "admin_credentials": 3,
+    "logging": 4
+  },
+  "critical_issues": [
+    {
+      "severity": "CRITICAL",
+      "issue": "Missing get_settings() in src/config.py",
+      "affected": ["app.py", "src/api/config.py", "src/api/auth.py"],
+      "impact": "FastAPI app cannot start"
+    },
+    {
+      "severity": "CRITICAL",
+      "issue": "Missing Settings methods",
+      "methods": ["has_discord_config", "get_channel_ids_list", "get_available_llm_providers", "get_preferred_ai_provider"],
+      "affected": ["src/api/config.py", "app.py"],
+      "impact": "Runtime errors in API routes"
+    },
+    {
+      "severity": "HIGH",
+      "issue": "Overlapping config classes",
+      "classes": ["Config", "Settings", "BotConfig", "AdvancedBotConfig"],
+      "impact": "Confusion, maintenance burden, inconsistency"
+    }
+  ],
+  "migration_impact": {
+    "high_risk_changes": [
+      "Consolidating 5 config classes into 1",
+      "Updating 23 import statements",
+      "Fixing broken dependency injection in FastAPI"
+    ],
+    "affected_modules": {
+      "api": 3,
+      "bot": 4,
+      "tests": 6,
+      "examples": 4,
+      "main": 2
+    }
+  },
+  "recommendations": [
+    "Implement missing get_settings(), get_config_manager(), reload_settings() in src/config.py immediately",
+    "Add missing methods to Settings class",
+    "Create unified config based on AdvancedBotConfig",
+    "Deprecate redundant config classes",
+    "Update all imports to use unified system"
+  ]
+}

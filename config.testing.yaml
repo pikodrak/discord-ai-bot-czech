@@ -1,0 +1,37 @@
+# Testing Environment Configuration
+# Settings optimized for automated testing
+
+environment: testing
+
+# Logging - minimal in tests
+log_level: WARNING
+
+# Bot behavior - permissive for testing
+bot_response_threshold: 0.4
+bot_max_history: 20
+
+# Retry configuration - fail fast in tests
+max_retry_attempts: 1
+retry_base_delay: 0.1
+retry_max_delay: 1.0
+
+# Timeouts - short for fast tests
+llm_timeout: 10.0
+http_timeout: 5.0
+discord_timeout: 5.0
+
+# Reconnection - disabled in tests
+enable_auto_reconnect: false
+max_reconnect_attempts: 1
+reconnect_base_delay: 1.0
+
+# Feature flags - minimal features for tests
+enable_message_caching: false  # Disabled for predictability
+enable_graceful_degradation: false  # Fail fast
+enable_health_checks: false
+enable_metrics: false
+
+# Performance - minimal for tests
+message_queue_size: 10
+worker_threads: 1
+cache_ttl: 60

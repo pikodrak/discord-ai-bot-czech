@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord AI Bot - Admin Panel</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="container">
+            <div class="card login-card">
+                <h1>Discord AI Bot Admin</h1>
+                <p class="subtitle">Sign in to manage your bot</p>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                    </div>
+
+                    <div id="loginError" class="error-message hidden"></div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="screen">
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h2>Discord AI Bot Admin</h2>
+            </div>
+            <div class="navbar-actions">
+                <span id="userInfo" class="user-info"></span>
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Bot Status Section -->
+            <div class="section">
+                <h2>Bot Status</h2>
+                <div class="grid">
+                    <div class="card status-card">
+                        <div class="status-indicator">
+                            <span id="statusDot" class="status-dot"></span>
+                            <span id="statusText">Checking...</span>
+                        </div>
+                        <div class="status-details">
+                            <div class="detail-item">
+                                <span class="label">Connected:</span>
+                                <span id="connectedStatus">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Server:</span>
+                                <span id="guildName">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Uptime:</span>
+                                <span id="uptime">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stats-card">
+                        <h3>Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="messagesProcessed">0</div>
+                                <div class="stat-label">Messages Processed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="responsesSent">0</div>
+                                <div class="stat-label">Responses Sent</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="avgResponseTime">0ms</div>
+                                <div class="stat-label">Avg Response Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bot Control Buttons -->
+                <div class="control-panel">
+                    <button id="startBtn" class="btn btn-success" data-action="start">Start Bot</button>
+                    <button id="restartBtn" class="btn btn-warning" data-action="restart">Restart Bot</button>
+                    <button id="stopBtn" class="btn btn-danger" data-action="stop">Stop Bot</button>
+                    <button id="refreshBtn" class="btn btn-secondary">Refresh Status</button>
+                </div>
+            </div>
+
+            <!-- Configuration Section -->
+            <div class="section">
+                <h2>Configuration</h2>
+                <div class="card">
+                    <div id="configLoading" class="loading-message">Loading configuration...</div>
+                    <div id="configError" class="error-message hidden"></div>
+
+                    <form id="configForm" class="hidden">
+                        <div class="grid">
+                            <div class="form-group">
+                                <label for="botLanguage">Bot Language</label>
+                                <select id="botLanguage" name="bot_language">
+                                    <option value="cs">Czech (cs)</option>
+                                    <option value="en">English (en)</option>
+                                    <option value="sk">Slovak (sk)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="botPersonality">Bot Personality</label>
+                                <select id="botPersonality" name="bot_personality">
+                                    <option value="friendly">Friendly</option>
+                                    <option value="professional">Professional</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="humorous">Humorous</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="responseThreshold">Response Threshold</label>
+                                <input type="number" id="responseThreshold" name="bot_response_threshold"
+                                       min="0" max="1" step="0.1" required>
+                                <small>Confidence threshold (0.0 - 1.0)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxHistory">Max History</label>
+                                <input type="number" id="maxHistory" name="bot_max_history"
+                                       min="1" max="200" required>
+                                <small>Maximum messages in history (1-200)</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="channelIds">Discord Channel IDs</label>
+                            <input type="text" id="channelIds" name="discord_channel_ids"
+                                   placeholder="123456789,987654321">
+                            <small>Comma-separated channel IDs</small>
+                        </div>
+
+                        <div class="info-box">
+                            <h4>Current AI Provider</h4>
+                            <div class="provider-info">
+                                <span class="label">Provider:</span>
+                                <span id="aiProvider">-</span>
+                            </div>
+                            <div class="provider-info">
+                                <span class="label">Discord Configured:</span>
+                                <span id="discordConfigured">-</span>
+                            </div>
+                        </div>
+
+                        <div id="configUpdateError" class="error-message hidden"></div>
+                        <div id="configUpdateSuccess" class="success-message hidden"></div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Configuration</button>
+                            <button type="button" id="reloadConfigBtn" class="btn btn-secondary">Reload from File</button>
+                            <button type="button" id="validateConfigBtn" class="btn btn-secondary">Validate</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Health Check Section -->
+            <div class="section">
+                <h2>System Health</h2>
+                <div class="card">
+                    <div id="healthInfo" class="health-info">
+                        <div class="health-item">
+                            <span class="label">API Status:</span>
+                            <span id="healthStatus" class="badge">-</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="label">API Version:</span>
+                            <span id="apiVersion">-</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="label">Discord Configured:</span>
+                            <span id="healthDiscord" class="badge">-</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="label">AI Configured:</span>
+                            <span id="healthAI" class="badge">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

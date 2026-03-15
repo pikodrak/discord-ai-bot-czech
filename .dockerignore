@@ -1,0 +1,94 @@
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+.pyenv
+
+# Environment files (will be passed via docker-compose)
+.env
+.env.*
+!.env.example
+
+# Logs and databases (will be mounted as volumes)
+logs/
+*.log
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.pydevproject
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker files (not needed in image)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Tests (not needed in production)
+tests/
+test_*.py
+*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Documentation (not needed in production)
+*.md
+!README.md
+docs/
+examples/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Misc
+.DS_Store
+*.bak
+*.tmp
+*.swp
+node_modules/
+.cache/

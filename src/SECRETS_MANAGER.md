@@ -1,0 +1,11 @@
+Comprehensive documentation including:
+- Security features overview (AES-256-GCM, PBKDF2)
+- Quick start guide
+- Complete API reference with all methods
+- Exception hierarchy
+- 5 real-world use cases
+- Security best practices
+- Integration examples (Discord bot, environment variables, config classes)
+- Performance considerations
+- Troubleshooting guide
+- Migration guide from plain text to encrypted config

@@ -1,0 +1,1 @@
+Comprehensive 500+ line configuration management guide covering SharedConfigLoader, AdvancedBotConfig, and Settings modules

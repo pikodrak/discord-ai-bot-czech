@@ -1,0 +1,10 @@
+Functional end-to-end test suite with 32 tests covering:
+- Basic bot functionality (4 tests)
+- Conversation flow (3 tests)
+- LLM provider interaction (5 tests)
+- Error scenarios (4 tests)
+- Command handling (4 tests)
+- Rate limiting (3 tests)
+- Database integration (3 tests)
+- Health checks (3 tests)
+- Performance optimization (3 tests)

@@ -1,0 +1,171 @@
+{
+  "score": 35,
+  "risk_level": "critical",
+  "vulnerabilities": [
+    {
+      "type": "A02:2021 – Cryptographic Failures",
+      "severity": "critical",
+      "file": "src/config.py",
+      "line_hint": "Lines 23-25, 27-28",
+      "description": "Hardcoded default credentials and secret keys in production code. The default secret_key 'insecure-secret-key-change-in-production' and admin credentials (username: 'admin', password: 'changeme') are exposed in source code and can be used to compromise the system if not changed.",
+      "remediation": "Remove all default credentials from code. Force users to set these values via environment variables on first run. Add startup validation that raises an error if default/weak values are detected in production mode. Consider using secrets management solutions like HashiCorp Vault, AWS Secrets Manager, or similar."
+    },
+    {
+      "type": "A02:2021 – Cryptographic Failures",
+      "severity": "critical",
+      "file": "src/auth/security.py",
+      "line_hint": "Line 12",
+      "description": "Hardcoded SECRET_KEY 'your-secret-key-change-in-production' in security module. This key is used for JWT token signing. If attackers obtain this key, they can forge arbitrary JWT tokens and gain admin access.",
+      "remediation": "Load SECRET_KEY from environment variables or secure configuration. Import from src.config.Settings instead of hardcoding. Ensure the key is generated using cryptographically secure random generators (e.g., secrets.token_urlsafe(32))."
+    },
+    {
+      "type": "A02:2021 – Cryptographic Failures",
+      "severity": "critical",
+      "file": "src/auth/database.py",
+      "line_hint": "Lines 32-35",
+      "description": "Default admin user created with hardcoded password 'admin123'. This is a well-known weak credential that attackers will try first. The in-memory database means this admin user is recreated with the same password on every restart.",
+      "remediation": "On first startup, generate a random admin password and display it once to the administrator (or send via secure channel). Store hashed credentials in persistent storage. Require password change on first login. Implement account lockout after failed login attempts."
+    },
+    {
+      "type": "A07:2021 – Identification and Authentication Failures",
+      "severity": "high",
+      "file": "src/auth/database.py",
+      "line_hint": "Lines 14-17, entire class",
+      "description": "User database implemented as in-memory dictionary. All user data including hashed passwords is lost on application restart. No persistence means users need to be recreated after each restart, and there's no audit trail of user management actions.",
+      "remediation": "Implement proper database persistence using SQLAlchemy with PostgreSQL/MySQL, or at minimum SQLite with proper file-based storage. Add database migrations using Alembic. Implement audit logging for all authentication and user management events."
+    },
+    {
+      "type": "A01:2021 – Broken Access Control",
+      "severity": "high",
+      "file": "src/main.py",
+      "line_hint": "Lines 45-50",
+      "description": "CORS middleware configured with allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*']. This completely disables CORS protection and allows any website to make authenticated requests to the API, enabling CSRF attacks.",
+      "remediation": "Configure CORS with specific allowed origins only. In production, set allow_origins to a whitelist of trusted domains (e.g., ['https://yourdomain.com']). Never use wildcard '*' with allow_credentials=True. Implement CSRF protection using tokens or SameSite cookie attributes."
+    },
+    {
+      "type": "A04:2021 – Insecure Design",
+      "severity": "high",
+      "file": "src/auth/routes.py",
+      "line_hint": "Lines 29-48",
+      "description": "No rate limiting on authentication endpoints. Attackers can perform unlimited brute-force attacks against login endpoint (/auth/login) and user enumeration via timing attacks on the registration endpoint.",
+      "remediation": "Implement rate limiting using libraries like slowapi or fastapi-limiter. Add progressive delays after failed login attempts. Implement account lockout after N failed attempts (e.g., 5). Use constant-time comparison for authentication checks to prevent timing attacks. Consider adding CAPTCHA for repeated failed attempts."
+    },
+    {
+      "type": "A09:2021 – Security Logging and Monitoring Failures",
+      "severity": "high",
+      "file": "src/auth/routes.py, src/api/auth.py",
+      "line_hint": "All authentication endpoints",
+      "description": "No security logging for authentication events. Failed login attempts, successful logins, privilege escalations, user creation/deletion are not logged. This prevents detection of attacks and forensic analysis after security incidents.",
+      "remediation": "Implement comprehensive security logging using Python's logging module. Log all authentication events (success/failure), user management operations, permission changes, and admin actions. Include timestamp, IP address, user agent, username (but not passwords), and action outcome. Send critical security events to a SIEM or monitoring system. Store logs securely and implement log rotation."
+    },
+    {
+      "type": "A05:2021 – Security Misconfiguration",
+      "severity": "high",
+      "file": "src/config.py",
+      "line_hint": "Lines 29, 95-99",
+      "description": "No distinction between development and production environments. api_reload defaults to False but can be enabled in production. Sensitive configuration like API keys, tokens, and credentials might be logged or exposed through debug endpoints.",
+      "remediation": "Add environment mode configuration (development/staging/production). In production mode: disable auto-reload, enforce strong secrets, disable debug endpoints, require HTTPS. Add validation that fails startup if production mode is enabled with weak credentials or insecure settings."
+    },
+    {
+      "type": "A09:2021 – Security Logging and Monitoring Failures",
+      "severity": "medium",
+      "file": "src/main.py",
+      "line_hint": "Lines 16-20",
+      "description": "Logging configured globally without security considerations. Sensitive data like API keys, tokens, or passwords might be inadvertently logged. Log level INFO may expose too much information in production.",
+      "remediation": "Implement secure logging with sensitive data filtering. Create a custom formatter that redacts sensitive fields (passwords, tokens, API keys). Use structured logging (JSON format) for better parsing. Set log level to WARNING in production. Ensure logs are stored securely with appropriate file permissions (600) and implement log rotation to prevent disk exhaustion."
+    },
+    {
+      "type": "A02:2021 – Cryptographic Failures",
+      "severity": "medium",
+      "file": "src/auth/security.py",
+      "line_hint": "Lines 55-57",
+      "description": "JWT tokens use datetime.utcnow() which is deprecated and doesn't include timezone information. Also, ACCESS_TOKEN_EXPIRE_MINUTES is hardcoded to 60 minutes which may be too long for admin sessions.",
+      "remediation": "Use datetime.now(timezone.utc) instead of datetime.utcnow(). Make token expiration configurable per environment. For admin tokens, consider shorter expiration times (15-30 minutes) with refresh token mechanism. Implement token revocation/blacklist for logout functionality."
+    },
+    {
+      "type": "A01:2021 – Broken Access Control",
+      "severity": "medium",
+      "file": "src/auth/routes.py",
+      "line_hint": "Lines 106-116",
+      "description": "Logout endpoint is a placeholder that doesn't actually invalidate tokens. Since JWTs are stateless, tokens remain valid until expiration even after logout. An attacker who obtains a token can continue using it.",
+      "remediation": "Implement token blacklist/revocation using Redis or database. Store revoked tokens (by JTI claim) until expiration. Check blacklist in get_current_user middleware. Alternatively, implement short-lived access tokens with refresh tokens stored in database that can be revoked."
+    },
+    {
+      "type": "A03:2021 – Injection",
+      "severity": "medium",
+      "file": "src/config.py",
+      "line_hint": "Lines 44-45",
+      "description": "Channel IDs are parsed from comma-separated string without proper validation. Malformed input could potentially cause issues. No validation that IDs are actually numeric Discord snowflake IDs.",
+      "remediation": "Add strict validation for Discord IDs. Validate that channel IDs match Discord snowflake format (17-19 digit integers). Reject invalid input with clear error messages. Use Pydantic validators to enforce format: @field_validator('discord_channel_ids') should check each ID matches r'^\\d{17,19}$'."
+    },
+    {
+      "type": "A04:2021 – Insecure Design",
+      "severity": "medium",
+      "file": "src/auth/database.py",
+      "line_hint": "Lines 76-96",
+      "description": "User update method allows updating critical fields like is_admin without additional verification. No audit trail or confirmation required for privilege escalation.",
+      "remediation": "Require additional authentication (password re-entry or MFA) for privilege escalation. Implement approval workflow for admin role changes. Log all permission changes with detailed context. Consider making certain fields immutable or requiring separate specialized methods with enhanced security checks."
+    },
+    {
+      "type": "A02:2021 – Cryptographic Failures",
+      "severity": "medium",
+      "file": "src/api/auth.py",
+      "line_hint": "Lines 75-82",
+      "description": "Duplicate authentication implementation exists in src/api/auth.py alongside src/auth/ module. The authenticate_user function compares password against get_password_hash(settings.admin_password), which creates a NEW hash each time instead of comparing against stored hash. This will always fail authentication unless the logic is flawed.",
+      "remediation": "Remove duplicate authentication code. Use single source of truth from src/auth/ module. The authentication should compare against a pre-stored hash, not hash the plaintext password from config and compare. Store password hash in database/config, not plaintext password."
+    },
+    {
+      "type": "A04:2021 – Insecure Design",
+      "severity": "medium",
+      "file": "src/api/config.py",
+      "line_hint": "Lines 58-79",
+      "description": "Configuration update endpoint allows changing sensitive values like API keys via API without requiring reauthentication. Changes are only in-memory and not persisted, which could cause confusion. No validation of API key format or testing if new keys actually work.",
+      "remediation": "Require password re-entry or MFA for changing sensitive configuration. Validate API key formats before accepting. Optionally test new API keys by making a test call to the respective service. Persist changes to .env file or database with proper permissions. Add confirmation step before applying configuration changes."
+    },
+    {
+      "type": "A05:2021 – Security Misconfiguration",
+      "severity": "low",
+      "file": "src/main.py",
+      "line_hint": "Lines 33-37",
+      "description": "FastAPI application exposes automatic documentation at /docs and /redoc endpoints in all environments. These endpoints reveal API structure, authentication requirements, and schemas which aids attackers in reconnaissance.",
+      "remediation": "Disable automatic documentation in production or protect it with authentication. Add configuration option to enable/disable docs based on environment: FastAPI(docs_url=None if is_production else '/docs', redoc_url=None if is_production else '/redoc'). If docs must be available in production, require admin authentication to access them."
+    },
+    {
+      "type": "A02:2021 – Cryptographic Failures",
+      "severity": "low",
+      "file": "src/config.py",
+      "line_hint": "Lines 33-36",
+      "description": "API keys and tokens stored in configuration are loaded from .env file but no encryption at rest. If .env file is committed to version control or backups are compromised, all secrets are exposed in plaintext.",
+      "remediation": "Add .env to .gitignore to prevent committing secrets. Use .env.example template with dummy values. Consider encrypting sensitive values in .env using tools like git-crypt or SOPS. For production, use environment variables from secure sources (Kubernetes secrets, AWS Systems Manager, etc.). Implement secret rotation procedures. Use separate credentials for each environment."
+    },
+    {
+      "type": "A08:2021 – Software and Data Integrity Failures",
+      "severity": "low",
+      "file": "Docker configuration (implied)",
+      "line_hint": "N/A - Docker setup not provided",
+      "description": "Security audit requested Docker security review but Docker configuration files (Dockerfile, docker-compose.yml) were not provided in the code payload. Cannot verify container security practices, privilege levels, or exposed ports.",
+      "remediation": "When implementing Docker: Run containers as non-root user, use minimal base images (python:3.11-slim-alpine), implement multi-stage builds, scan images for vulnerabilities with tools like Trivy or Snyk, use read-only file systems where possible, limit container capabilities, implement health checks, and avoid hardcoding secrets in Dockerfiles."
+    }
+  ],
+  "recommendations": [
+    "IMMEDIATE: Change all default credentials and secret keys before deployment. Generate cryptographically secure random values.",
+    "IMMEDIATE: Implement rate limiting on all authentication endpoints to prevent brute-force attacks.",
+    "IMMEDIATE: Fix CORS configuration to whitelist specific origins only. Never use allow_origins=['*'] with credentials.",
+    "HIGH PRIORITY: Replace in-memory user database with persistent database (PostgreSQL recommended, SQLite minimum).",
+    "HIGH PRIORITY: Implement comprehensive security logging for all authentication and authorization events.",
+    "HIGH PRIORITY: Add environment-specific configuration (dev/staging/production) with strict validation in production mode.",
+    "HIGH PRIORITY: Implement proper JWT token revocation/blacklist mechanism for logout functionality.",
+    "MEDIUM PRIORITY: Add input validation for all Discord IDs and API configuration values.",
+    "MEDIUM PRIORITY: Remove duplicate authentication code (src/api/auth.py vs src/auth/ module) and use single source of truth.",
+    "MEDIUM PRIORITY: Disable or protect API documentation endpoints (/docs, /redoc) in production.",
+    "MEDIUM PRIORITY: Implement security headers using middleware (HSTS, CSP, X-Content-Type-Options, etc.).",
+    "MEDIUM PRIORITY: Add password complexity requirements and enforce password rotation policies.",
+    "MEDIUM PRIORITY: Implement Multi-Factor Authentication (MFA) for admin accounts.",
+    "LOW PRIORITY: Set up automated dependency vulnerability scanning (Dependabot, Snyk, or Safety).",
+    "LOW PRIORITY: Implement secrets encryption for .env files or migrate to dedicated secrets management.",
+    "LOW PRIORITY: Add security unit tests that verify authentication, authorization, and input validation.",
+    "ONGOING: Regular security audits and penetration testing, especially before major releases.",
+    "ONGOING: Keep dependencies updated and monitor security advisories for used libraries (FastAPI, PyJWT, bcrypt, etc.)."
+  ],
+  "summary": "CRITICAL SECURITY ISSUES FOUND - NOT PRODUCTION READY. The Discord bot admin interface contains multiple critical vulnerabilities that make it unsuitable for production deployment without significant security improvements. The most severe issues are: (1) Hardcoded default credentials and secret keys that can be exploited if not changed, (2) Completely open CORS policy enabling CSRF attacks, (3) In-memory user database with no persistence, (4) No rate limiting enabling brute-force attacks, (5) Inadequate security logging preventing attack detection. Additionally, there are design issues including duplicate authentication implementations and non-functional logout. The codebase requires immediate remediation of critical vulnerabilities, implementation of security best practices, and thorough security testing before any production deployment. Estimated remediation effort: 3-5 days for critical issues, 1-2 weeks for comprehensive security hardening."
+}

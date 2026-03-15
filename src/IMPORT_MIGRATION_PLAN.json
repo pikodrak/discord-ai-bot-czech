@@ -1,0 +1,279 @@
+{
+  "summary": "Import Migration Plan for Discord AI Bot Czech",
+  "project": "discord-ai-bot-czech",
+  "created": "2026-03-15",
+  "total_files_to_remove": 7,
+  "total_imports_to_update": 6,
+  "breaking_changes": false,
+  
+  "files_to_remove": [
+    {
+      "path": "src/main.py",
+      "reason": "Stub file (33 bytes), canonical version is /main.py",
+      "canonical_path": "main.py",
+      "size": "33 bytes",
+      "status": "safe_to_delete"
+    },
+    {
+      "path": "src/bot.py",
+      "reason": "Duplicate of root bot.py",
+      "canonical_path": "bot.py",
+      "size": "4.5 KB",
+      "status": "safe_to_delete"
+    },
+    {
+      "path": "src/app.py",
+      "reason": "Stub file (58 bytes), canonical version is /app.py",
+      "canonical_path": "app.py",
+      "size": "58 bytes",
+      "status": "safe_to_delete"
+    },
+    {
+      "path": "run_api.py",
+      "reason": "Basic version, enhanced version exists in src/run_api.py",
+      "canonical_path": "src/run_api.py",
+      "size": "1.5 KB",
+      "status": "safe_to_delete"
+    },
+    {
+      "path": "src/retry_strategy.py",
+      "reason": "Duplicate of src/llm/retry_strategy.py with bug (Fibonacci calculation)",
+      "canonical_path": "src/llm/retry_strategy.py",
+      "size": "242 lines",
+      "bug_note": "Line 92 uses 'attempt + 2' instead of 'attempt + 1' (llm version is correct)",
+      "status": "safe_to_delete"
+    },
+    {
+      "path": "src/client_enhanced.py",
+      "reason": "Empty file (0 bytes)",
+      "canonical_path": "src/llm/client_enhanced.py",
+      "size": "0 bytes",
+      "status": "safe_to_delete"
+    },
+    {
+      "path": "src/providers.py",
+      "reason": "Empty file (0 bytes)",
+      "canonical_path": "src/llm/providers.py",
+      "size": "0 bytes",
+      "status": "safe_to_delete"
+    }
+  ],
+  
+  "files_to_keep": [
+    {
+      "path": "main.py",
+      "type": "entry_point",
+      "purpose": "Discord bot entry point with IPC and lifecycle management",
+      "size": "17 KB"
+    },
+    {
+      "path": "bot.py",
+      "type": "entry_point",
+      "purpose": "Simple bot implementation using src.config",
+      "size": "4.3 KB"
+    },
+    {
+      "path": "app.py",
+      "type": "entry_point",
+      "purpose": "FastAPI application with CORS, routers, and lifespan",
+      "size": "5.6 KB"
+    },
+    {
+      "path": "src/run_api.py",
+      "type": "utility",
+      "purpose": "Enhanced API startup script with start_api_server function",
+      "size": "3.4 KB"
+    },
+    {
+      "path": "src/llm/retry_strategy.py",
+      "type": "core_module",
+      "purpose": "LLM retry logic with multiple strategies",
+      "size": "242 lines"
+    },
+    {
+      "path": "src/llm/client_enhanced.py",
+      "type": "core_module",
+      "purpose": "Enhanced LLM client implementation",
+      "size": "497 lines"
+    },
+    {
+      "path": "src/llm/providers.py",
+      "type": "core_module",
+      "purpose": "LLM provider implementations",
+      "size": "506 lines"
+    },
+    {
+      "path": "src/exceptions.py",
+      "type": "core_module",
+      "purpose": "Bot-specific exceptions (RetryableError, NonRetryableError, etc.)",
+      "size": "54 lines",
+      "note": "NOT a duplicate - different from src/llm/exceptions.py"
+    },
+    {
+      "path": "src/llm/exceptions.py",
+      "type": "core_module",
+      "purpose": "LLM-specific exceptions (LLMError, LLMProviderError, etc.)",
+      "size": "54 lines",
+      "note": "NOT a duplicate - different from src/exceptions.py"
+    }
+  ],
+  
+  "import_updates": [
+    {
+      "file": "test_retry_manual.py",
+      "line": 19,
+      "current_import": "from retry_strategy import (",
+      "new_import": "from src.llm.retry_strategy import (",
+      "reason": "retry_strategy module moved to src/llm/",
+      "breaking": false
+    },
+    {
+      "file": "test_retry_manual.py",
+      "line": 24,
+      "current_import": "from exceptions import RetryableError, NonRetryableError",
+      "new_import": "from src.exceptions import RetryableError, NonRetryableError",
+      "reason": "Bot exceptions should be imported from src.exceptions",
+      "breaking": false
+    },
+    {
+      "file": "tests/test_retry.py",
+      "line": 14,
+      "current_import": "from retry_strategy import (",
+      "new_import": "from src.llm.retry_strategy import (",
+      "reason": "retry_strategy module moved to src/llm/",
+      "breaking": false
+    },
+    {
+      "file": "tests/test_retry.py",
+      "line": 20,
+      "current_import": "from exceptions import (",
+      "new_import": "from src.exceptions import (",
+      "reason": "Bot exceptions should be imported from src.exceptions",
+      "breaking": false
+    },
+    {
+      "file": "tests/test_auth.py",
+      "line": 11,
+      "current_import": "from src.main import app",
+      "new_import": "from app import app",
+      "reason": "FastAPI app is in root app.py, not src/main.py",
+      "breaking": false
+    },
+    {
+      "file": "tests/test_integration.py",
+      "line": 7,
+      "current_import": "from src.main import create_app",
+      "new_import": "from app import app",
+      "reason": "FastAPI app is in root app.py (investigate if create_app exists)",
+      "breaking": false,
+      "action_required": "Verify if create_app function exists or should use app directly"
+    }
+  ],
+  
+  "module_structure": {
+    "entry_points": {
+      "discord_bot": "main.py",
+      "fastapi_admin": "app.py",
+      "simple_bot": "bot.py"
+    },
+    "core_modules": {
+      "config": "src/config.py",
+      "bot_exceptions": "src/exceptions.py",
+      "llm_client": "src/llm/",
+      "api": "src/api/",
+      "auth": "src/auth/"
+    },
+    "no_breaking_changes": true,
+    "architecture_notes": "Project has two main entry points: Discord bot (main.py) and Admin API (app.py). LLM functionality is isolated in src/llm/ module. Bot and LLM have separate exception hierarchies."
+  },
+  
+  "migration_steps": [
+    {
+      "step": 1,
+      "action": "Update imports in test_retry_manual.py",
+      "details": "Change lines 19 and 24 to use src.llm.retry_strategy and src.exceptions",
+      "risk": "low"
+    },
+    {
+      "step": 2,
+      "action": "Update imports in tests/test_retry.py",
+      "details": "Change lines 14 and 20 to use src.llm.retry_strategy and src.exceptions",
+      "risk": "low"
+    },
+    {
+      "step": 3,
+      "action": "Update imports in tests/test_auth.py",
+      "details": "Change line 11 to import app from root app.py",
+      "risk": "low"
+    },
+    {
+      "step": 4,
+      "action": "Investigate and fix tests/test_integration.py",
+      "details": "Verify if create_app function exists or should import app directly",
+      "risk": "medium"
+    },
+    {
+      "step": 5,
+      "action": "Run test suite to verify imports",
+      "details": "Run pytest to ensure all imports work correctly",
+      "risk": "low"
+    },
+    {
+      "step": 6,
+      "action": "Delete duplicate files",
+      "details": "Remove 7 duplicate/stub files after confirming tests pass",
+      "risk": "low",
+      "files": [
+        "src/main.py",
+        "src/bot.py",
+        "src/app.py",
+        "run_api.py",
+        "src/retry_strategy.py",
+        "src/client_enhanced.py",
+        "src/providers.py"
+      ]
+    },
+    {
+      "step": 7,
+      "action": "Run final test suite",
+      "details": "Verify no broken imports after file deletion",
+      "risk": "low"
+    }
+  ],
+  
+  "verification_checklist": [
+    "All LLM-related code imports from src.llm.*",
+    "All bot-specific exceptions import from src.exceptions",
+    "All LLM exceptions import from src.llm.exceptions",
+    "Main bot entry point is /main.py",
+    "FastAPI application is /app.py",
+    "API startup uses /src/run_api.py",
+    "No empty stub files remain",
+    "Tests import from correct locations",
+    "No breaking changes in module structure"
+  ],
+  
+  "risks_and_mitigation": {
+    "risks": [
+      {
+        "risk": "Tests may fail if create_app function is expected",
+        "mitigation": "Investigate test_integration.py before making changes",
+        "severity": "medium"
+      },
+      {
+        "risk": "Some imports may be in files not yet analyzed",
+        "mitigation": "Run full test suite before and after migration",
+        "severity": "low"
+      }
+    ],
+    "rollback_plan": "All changes are to import statements only. Rollback by reverting commits. Keep backup of deleted files until tests pass."
+  },
+  
+  "notes": [
+    "The src/exceptions.py and src/llm/exceptions.py are NOT duplicates - they serve different purposes",
+    "The src/retry_strategy.py has a bug in Fibonacci calculation (line 92) - canonical version in src/llm/ is correct",
+    "Empty files (client_enhanced.py, providers.py) were likely created as placeholders and never removed",
+    "Root-level entry points (main.py, app.py, bot.py) should remain in root for easy discovery",
+    "The project structure separates Discord bot logic from FastAPI admin interface cleanly"
+  ]
+}

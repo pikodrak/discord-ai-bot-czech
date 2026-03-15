@@ -1,0 +1,99 @@
+{
+  "slug": "discord-ai-bot-czech",
+  "summary": "Discord AI bot using Claude API (with Gemini/OpenAI fallback) that participates naturally in Czech conversations, responds intelligently to interesting messages, deployable via Docker with FastAPI management interface",
+  "description": "discord-bot\n---\nMá se zapojit v češtině do konverzace, nechci aby bylo poznat, že je to bot.\n---\n1. What should the Discord bot do? - pripoji se do kanalu a bude se ucastnit konveryace v cestine  2. Should the bot use AI/LLM for responses, or predefined commands and reactions? bude pouyivat cloude API ci gemini API ci OpenAI API  What are the main features/commands you want proste poslouchat a kdzy bude neco yajimaveho, yareaguje\n---\nWhich API do you prefer for the AI responses? - v poradi Claude API, Gemini API, or OpenAI API Should the bot respond to every message in the channel, or only when mentioned/when certain keywords appear? na ypravu, ktera bude necim yajimava. Idealne kdyz pujde delat chytreho  Do you have a Discord bot token already, or should the documentation include setup instructions for creating one? nemam, udelej mi navod  Where should this bot be deployed? na testovani staci spustit tady z projektove slozky, ale priprav to na docker a pak to bude mit spravu pres prihlaseni a pak fastaapi. Aby slo pres klikatka treba zmenit token, kam se pripoji apod",
+  "status": "in_progress",
+  "created_at": "2026-03-13T16:18:07.608722+00:00",
+  "tasks": [
+    {
+      "id": "346e600f-a794-4f19-92e0-f3e7168afd38",
+      "dept": "ARCH",
+      "title": "Design Discord AI bot architecture",
+      "priority": 1
+    },
+    {
+      "id": "fc4d87c8-57ac-41ea-80bb-fc7ad89d4215",
+      "dept": "DEV",
+      "title": "Implement Discord bot core functionality",
+      "priority": 2
+    },
+    {
+      "id": "3d20bf3a-4e07-4ee9-a5da-ca8473ebaff4",
+      "dept": "DEV",
+      "title": "Build FastAPI admin interface",
+      "priority": 3
+    },
+    {
+      "id": "e1185987-3421-4aa0-85a7-c6f0c1ceb78a",
+      "dept": "SEC",
+      "title": "Security audit for bot and API",
+      "priority": 4
+    },
+    {
+      "id": "9913fb9f-f8cd-4427-b679-c563c9c2021f",
+      "dept": "TEST",
+      "title": "Test bot conversation and admin features",
+      "priority": 5
+    },
+    {
+      "id": "02959869-678e-40d7-9952-56a811c6762a",
+      "dept": "DOCS",
+      "title": "Write setup and usage documentation",
+      "priority": 6
+    },
+    {
+      "id": "9c238e66-c5e8-4ea1-b350-6eb03228df42",
+      "dept": "DEPLOY",
+      "title": "Prepare Docker deployment configuration",
+      "priority": 7
+    },
+    {
+      "id": "f4bac3a8-d90c-41d0-af90-2f0aa594aa3b",
+      "dept": "IMPORT",
+      "title": "Analyze & refactor: discord-ai-bot-czech",
+      "priority": 3
+    },
+    {
+      "id": "a74c0258-120d-498a-aa2e-2ddf7fbd5cda",
+      "dept": "IMPORT",
+      "title": "Analyze & refactor: discord-ai-bot-czech",
+      "priority": 3
+    },
+    {
+      "id": "8363ff12-f30d-4d7b-bd6c-f22a4975b0e0",
+      "dept": "TEST",
+      "title": "Write complete tests for the entire project",
+      "priority": 5
+    },
+    {
+      "id": "7bd41b34-f92c-4210-932d-b3a0c806c361",
+      "dept": "DEV",
+      "title": "Fix stub files in discord-ai-bot-czech: src/logger.py, src/secrets_manager.py, s",
+      "priority": 2
+    },
+    {
+      "id": "1416daef-a863-4985-b6c1-e73f17663558",
+      "dept": "DEV",
+      "title": "Fix syntax errors in discord-ai-bot-czech: Syntax error in src/main_enhanced.py:",
+      "priority": 1
+    },
+    {
+      "id": "83b50630-222d-420f-bbf4-e56109004e23",
+      "dept": "TEST",
+      "title": "Run and verify Discord bot functionality",
+      "priority": 1
+    },
+    {
+      "id": "42a9f774-a20a-47df-9a22-7fafdfe71e43",
+      "dept": "DEV",
+      "title": "Implement report generation after run command execution",
+      "priority": 3
+    },
+    {
+      "id": "0238a431-c351-4593-8054-66702a99e26c",
+      "dept": "IMPORT",
+      "title": "Analyze & refactor: discord-ai-bot-czech",
+      "priority": 3
+    }
+  ]
+}

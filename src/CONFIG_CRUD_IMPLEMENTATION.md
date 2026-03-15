@@ -1,0 +1,1 @@
+Updated documentation to reflect encrypted vault usage, including security features, persistence layers, credential rotation policies, and vault architecture

@@ -1,0 +1,137 @@
+{
+  "architecture": {
+    "modules": [
+      {
+        "name": "discord_client",
+        "purpose": "Discord bot client, event handling, message monitoring",
+        "files": [
+          "src/discord_client/__init__.py",
+          "src/discord_client/bot.py",
+          "src/discord_client/events.py",
+          "src/discord_client/handlers.py"
+        ],
+        "dependencies": [
+          "config_manager",
+          "message_analyzer",
+          "llm_service"
+        ]
+      },
+      {
+        "name": "message_analyzer",
+        "purpose": "Detect interesting messages, filter noise, analyze context",
+        "files": [
+          "src/message_analyzer/__init__.py",
+          "src/message_analyzer/detector.py",
+          "src/message_analyzer/filters.py",
+          "src/message_analyzer/context.py"
+        ],
+        "dependencies": [
+          "config_manager"
+        ]
+      },
+      {
+        "name": "llm_service",
+        "purpose": "Multi-LLM orchestration with fallback logic",
+        "files": [
+          "src/llm_service/__init__.py",
+          "src/llm_service/base.py",
+          "src/llm_service/claude.py",
+          "src/llm_service/gemini.py",
+          "src/llm_service/openai.py",
+          "src/llm_service/orchestrator.py"
+        ],
+        "dependencies": [
+          "config_manager"
+        ]
+      },
+      {
+        "name": "config_manager",
+        "purpose": "Configuration loading, validation, hot-reload support",
+        "files": [
+          "src/config_manager/__init__.py",
+          "src/config_manager/schema.py",
+          "src/config_manager/loader.py",
+          "src/config_manager/validator.py"
+        ],
+        "dependencies": []
+      },
+      {
+        "name": "admin_api",
+        "purpose": "FastAPI interface for configuration and token management",
+        "files": [
+          "src/admin_api/__init__.py",
+          "src/admin_api/app.py",
+          "src/admin_api/routes.py",
+          "src/admin_api/auth.py",
+          "src/admin_api/models.py"
+        ],
+        "dependencies": [
+          "config_manager",
+          "discord_client"
+        ]
+      },
+      {
+        "name": "storage",
+        "purpose": "Message history, conversation context persistence",
+        "files": [
+          "src/storage/__init__.py",
+          "src/storage/repository.py",
+          "src/storage/models.py"
+        ],
+        "dependencies": []
+      },
+      {
+        "name": "utils",
+        "purpose": "Logging, metrics, error handling utilities",
+        "files": [
+          "src/utils/__init__.py",
+          "src/utils/logger.py",
+          "src/utils/metrics.py",
+          "src/utils/errors.py"
+        ],
+        "dependencies": []
+      }
+    ],
+    "tech_stack": [
+      "Python 3.11+",
+      "discord.py 2.x",
+      "FastAPI",
+      "Anthropic SDK (Claude)",
+      "Google Generative AI SDK (Gemini)",
+      "OpenAI SDK",
+      "Pydantic",
+      "SQLite/PostgreSQL",
+      "Docker",
+      "Uvicorn",
+      "python-dotenv"
+    ],
+    "patterns": [
+      "Repository pattern for data access",
+      "Strategy pattern for LLM providers",
+      "Chain of responsibility for message filtering",
+      "Dependency injection for configuration",
+      "Circuit breaker for API fallback"
+    ],
+    "directory_structure": "discord-ai-bot-czech/\n├── src/\n│   ├── discord_client/\n│   │   ├── __init__.py\n│   │   ├── bot.py\n│   │   ├── events.py\n│   │   └── handlers.py\n│   ├── message_analyzer/\n│   │   ├── __init__.py\n│   │   ├── detector.py\n│   │   ├── filters.py\n│   │   └── context.py\n│   ├── llm_service/\n│   │   ├── __init__.py\n│   │   ├── base.py\n│   │   ├── claude.py\n│   │   ├── gemini.py\n│   │   ├── openai.py\n│   │   └── orchestrator.py\n│   ├── config_manager/\n│   │   ├── __init__.py\n│   │   ├── schema.py\n│   │   ├── loader.py\n│   │   └── validator.py\n│   ├── admin_api/\n│   │   ├── __init__.py\n│   │   ├── app.py\n│   │   ├── routes.py\n│   │   ├── auth.py\n│   │   └── models.py\n│   ├── storage/\n│   │   ├── __init__.py\n│   │   ├── repository.py\n│   │   └── models.py\n│   ├── utils/\n│   │   ├── __init__.py\n│   │   ├── logger.py\n│   │   ├── metrics.py\n│   │   └── errors.py\n│   └── main.py\n├── config/\n│   ├── config.yaml\n│   └── config.schema.json\n├── tests/\n│   ├── unit/\n│   ├── integration/\n│   └── fixtures/\n├── docker/\n│   ├── Dockerfile\n│   └── docker-compose.yml\n├── .env.example\n├── requirements.txt\n├── pyproject.toml\n└── README.md"
+  },
+  "implementation_order": [
+    "utils",
+    "config_manager",
+    "storage",
+    "llm_service",
+    "message_analyzer",
+    "discord_client",
+    "admin_api"
+  ],
+  "risks": [
+    "Discord rate limiting - implement exponential backoff and request queuing",
+    "LLM API costs - monitor usage and implement daily spending limits",
+    "Message context window overflow - implement smart context truncation",
+    "Bot spam detection - add cooldown periods and message frequency limits",
+    "Security of admin API - implement proper authentication and HTTPS",
+    "Configuration hot-reload race conditions - use proper locking mechanisms",
+    "Czech language quality - test LLM responses thoroughly for natural Czech",
+    "Fallback chain failures - ensure graceful degradation when all LLMs fail"
+  ],
+  "summary": "The architecture follows a modular design with clear separation of concerns. The discord_client module handles Discord integration and events. The message_analyzer implements filtering logic using a chain of responsibility pattern to detect interesting messages. The llm_service provides multi-LLM support with a strategy pattern and circuit breaker for automatic fallback (Claude → Gemini → OpenAI). Configuration is centralized in config_manager with validation and hot-reload support. The admin_api provides a future FastAPI interface for runtime configuration. The storage module handles conversation context persistence. All modules use dependency injection for loose coupling. The system is designed to be containerized with Docker, with separate containers for the Discord bot and admin API if needed. Configuration uses YAML with JSON schema validation, and secrets are managed via environment variables."
+}

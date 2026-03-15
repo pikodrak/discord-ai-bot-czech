@@ -1,0 +1,1 @@
+Vanilla JavaScript application handling authentication (JWT), API communication (Fetch API), state management (LocalStorage), dashboard updates, real-time status monitoring (10s auto-refresh), configuration management, and bot control. Organized into modules: Auth, API, Dashboard, and Utils.

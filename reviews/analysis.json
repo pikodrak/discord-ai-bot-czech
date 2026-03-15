@@ -1,0 +1,179 @@
+{
+  "analysis": {
+    "language": "Python",
+    "framework": "discord.py + FastAPI",
+    "structure": "Multi-layer architecture with bot/ (Discord bot cogs), src/ (core services including LLM providers, API, config, IPC), tests/ (comprehensive test suite), and examples/. Separation between bot logic and REST API admin interface.",
+    "entry_points": [
+      "main.py",
+      "src/run_api.py",
+      "src/app.py"
+    ],
+    "dependencies": [
+      "discord.py",
+      "anthropic",
+      "google-generativeai",
+      "openai",
+      "fastapi",
+      "uvicorn",
+      "pydantic",
+      "pydantic-settings",
+      "python-dotenv",
+      "aiohttp",
+      "pyyaml",
+      "psutil",
+      "passlib",
+      "bcrypt",
+      "httpx",
+      "pytest"
+    ],
+    "code_quality": 75,
+    "test_coverage_estimate": 65
+  },
+  "issues": [
+    {
+      "severity": "critical",
+      "file": "requirements.txt",
+      "description": "Invalid dependencies: 'exceptions', 'models', 'jwt', 'random', 'discord-py', 'retry-strategy', 'security' are not valid PyPI packages. These are either built-in modules or typos.",
+      "suggestion": "Remove invalid entries: exceptions, models, jwt, random, security, retry-strategy. Replace 'discord-py' with 'discord.py' (already present). Use 'python-jose[cryptography]' for JWT instead of 'jose'."
+    },
+    {
+      "severity": "critical",
+      "file": "src/config.py",
+      "description": "File contains only placeholder text 'Already using src.config properly' instead of actual configuration code",
+      "suggestion": "Restore actual configuration implementation or investigate why file was overwritten"
+    },
+    {
+      "severity": "major",
+      "file": "src/api/config.py",
+      "description": "Excessive code duplication between config endpoint handlers - similar validation and error handling repeated across multiple endpoints",
+      "suggestion": "Extract common validation, error handling, and persistence logic into shared utility functions or middleware"
+    },
+    {
+      "severity": "major",
+      "file": "src/llm/providers.py",
+      "description": "Error handling relies on string matching (error_msg.lower()) rather than proper exception types, fragile across provider API changes",
+      "suggestion": "Use proper exception type checking with isinstance() for Gemini and OpenAI providers, matching Claude's approach"
+    },
+    {
+      "severity": "major",
+      "file": "main.py",
+      "description": "Complex initialization logic with nested exception handling makes error flow difficult to trace. Fallback config loading duplicates logic.",
+      "suggestion": "Extract configuration loading into dedicated function with clear error hierarchy. Simplify try-except nesting."
+    },
+    {
+      "severity": "major",
+      "file": "src/llm/client_enhanced.py",
+      "description": "Missing proper cleanup in __aexit__ error handling - errors during provider cleanup are logged but swallowed, potentially masking issues",
+      "suggestion": "Consider re-raising cleanup errors or aggregating them into a composite exception for better visibility"
+    },
+    {
+      "severity": "minor",
+      "file": "src/api/config.py",
+      "description": "Inconsistent use of field validators - some use @field_validator decorator while validation logic could be centralized",
+      "suggestion": "Consolidate validation logic into reusable validator functions or use Pydantic model_validator for cross-field validation"
+    },
+    {
+      "severity": "minor",
+      "file": "src/llm/circuit_breaker.py",
+      "description": "Circuit breaker statistics lack timestamp information for when totals were last reset, making trending analysis difficult",
+      "suggestion": "Add 'stats_since' timestamp to track when statistics collection began"
+    },
+    {
+      "severity": "minor",
+      "file": "src/api/bot.py",
+      "description": "Bot statistics endpoint returns placeholder values (all zeros) with TODO comment - incomplete feature",
+      "suggestion": "Either implement actual metrics collection or remove the endpoint until ready, documenting limitations in API docs"
+    },
+    {
+      "severity": "minor",
+      "file": "main.py",
+      "description": "Czech language strings embedded directly in code (line 271-280) violates internationalization best practices",
+      "suggestion": "Extract all user-facing strings into language resource files or use i18n library"
+    }
+  ],
+  "refactoring_suggestions": [
+    {
+      "title": "Fix critical requirements.txt",
+      "description": "Remove invalid package names that will cause pip install failures. This is blocking deployment and CI/CD pipelines. Replace 'jose' with 'python-jose[cryptography]', remove built-in modules (exceptions, models, random), remove invalid packages (jwt, security, retry-strategy, discord-py duplicate).",
+      "priority": 1,
+      "affected_files": [
+        "requirements.txt"
+      ]
+    },
+    {
+      "title": "Restore or fix src/config.py",
+      "description": "This critical configuration file contains only placeholder text. Either restore from backup or investigate how it was corrupted. The bot likely cannot function properly without this file.",
+      "priority": 1,
+      "affected_files": [
+        "src/config.py"
+      ]
+    },
+    {
+      "title": "Consolidate config API handlers",
+      "description": "Extract common patterns from config router endpoints into shared utilities: validation wrapper, error response formatter, persistence handler. Reduce 600+ lines of duplicated logic to ~400 lines with better maintainability.",
+      "priority": 2,
+      "affected_files": [
+        "src/api/config.py"
+      ]
+    },
+    {
+      "title": "Improve LLM provider error handling",
+      "description": "Replace fragile string-based error detection in Gemini and OpenAI providers with proper exception type checking. Add provider-specific exception classes similar to Anthropic's approach.",
+      "priority": 2,
+      "affected_files": [
+        "src/llm/providers.py",
+        "src/llm/exceptions.py"
+      ]
+    },
+    {
+      "title": "Extract configuration loading logic",
+      "description": "Create dedicated ConfigLoader class to handle environment-specific config loading, validation, and fallback logic. Reduces main.py complexity from 470 to ~300 lines while improving testability.",
+      "priority": 3,
+      "affected_files": [
+        "main.py",
+        "src/config.py"
+      ]
+    },
+    {
+      "title": "Implement actual bot statistics",
+      "description": "Complete the statistics collection feature or remove the endpoint. Add prometheus-style metrics for message counts, provider usage, response times. Consider integrating with existing health monitoring.",
+      "priority": 3,
+      "affected_files": [
+        "src/api/bot.py",
+        "bot/cogs/ai_chat.py"
+      ]
+    },
+    {
+      "title": "Internationalize error messages",
+      "description": "Extract hardcoded Czech strings into language resource files. Create i18n system supporting both Czech and English based on bot configuration. Makes codebase more maintainable and internationally deployable.",
+      "priority": 4,
+      "affected_files": [
+        "main.py",
+        "bot/cogs/ai_chat.py",
+        "bot/errors.py"
+      ]
+    },
+    {
+      "title": "Enhance circuit breaker observability",
+      "description": "Add timestamps to circuit breaker statistics, implement metrics export for monitoring systems, add historical state transition logging for debugging provider reliability issues.",
+      "priority": 4,
+      "affected_files": [
+        "src/llm/circuit_breaker.py"
+      ]
+    },
+    {
+      "title": "Reduce duplicate bot/src structure",
+      "description": "Project has both bot/ and src/ directories with overlapping concerns (errors.py, lifecycle.py, context_manager.py exist in both). Consolidate to single source of truth, preferably in src/ with bot/ only containing Discord-specific cogs.",
+      "priority": 2,
+      "affected_files": [
+        "bot/errors.py",
+        "src/errors.py",
+        "bot/lifecycle.py",
+        "src/lifecycle.py",
+        "bot/context_manager.py",
+        "src/context_manager.py"
+      ]
+    }
+  ],
+  "summary": "Discord AI bot with multi-provider LLM support (Claude, Gemini, OpenAI), FastAPI admin interface, and comprehensive error handling. Architecture is well-structured with clear separation between Discord bot logic and REST API. Code demonstrates solid engineering practices including circuit breaker pattern, retry strategies, lifecycle management, and async context managers. However, project suffers from critical issues in dependencies and configuration files that block deployment. Significant code duplication exists both in API handlers and between bot/src directories. Test coverage is good (~65%) with 30 test files covering major functionality. Priority: fix requirements.txt and config.py immediately (blocking), then address duplication and error handling improvements. Overall code quality is above average (75/100) but needs cleanup to reach production readiness."
+}

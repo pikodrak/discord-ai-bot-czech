@@ -1,0 +1,35 @@
+# Development Configuration Example
+# Settings optimized for local development
+
+environment: development
+
+# Logging - verbose for debugging
+log_level: DEBUG
+
+# Bot behavior - more responsive in development
+bot_response_threshold: 0.5
+bot_max_history: 30
+
+# Retry configuration - faster failures in development
+max_retry_attempts: 2
+retry_base_delay: 0.5
+retry_max_delay: 10.0
+
+# Timeouts - shorter in development
+llm_timeout: 30.0
+http_timeout: 20.0
+
+# Reconnection - less persistent in development
+max_reconnect_attempts: 3
+reconnect_base_delay: 2.0
+
+# Feature flags - debugging features enabled
+enable_message_caching: false  # Disable caching for testing
+enable_graceful_degradation: true
+enable_health_checks: true
+enable_metrics: true
+
+# Performance - lighter load for development
+message_queue_size: 50
+worker_threads: 2
+cache_ttl: 600

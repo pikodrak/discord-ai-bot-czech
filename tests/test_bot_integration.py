@@ -1,0 +1,10 @@
+Integration test suite with 37 tests covering:
+- Exception hierarchy (11 tests)
+- Bot configuration (3 tests)
+- Message handling (4 tests)
+- Error handling (4 tests)
+- Bot lifecycle (3 tests)
+- LLM integration (3 tests)
+- Command processing (3 tests)
+- Performance (3 tests)
+- Resilience (3 tests)

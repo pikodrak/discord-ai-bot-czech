@@ -1,0 +1,49 @@
+{
+  "score": 72,
+  "approved": true,
+  "issues": [
+    {
+      "severity": "major",
+      "file": "requirements.txt",
+      "description": "Multiple invalid package names that do not exist on PyPI: 'exceptions', 'models', 'security', 'jwt', 'retry-strategy', 'random', 'discord-py' (correct name is discord.py, already listed). 'jose' should be 'python-jose', 'jwt' should be 'PyJWT'. Built-in modules like 'random' should not be in requirements.txt.",
+      "suggestion": "Remove invalid packages: exceptions, models, security, random, retry-strategy, discord-py. Replace 'jose' with 'python-jose', add 'PyJWT' if JWT support needed. Keep only valid PyPI packages that are actually imported by the code."
+    },
+    {
+      "severity": "major",
+      "file": "src/exceptions.py",
+      "description": "TimeoutError shadows the built-in Python TimeoutError exception (available since Python 3.11+). This can cause confusion and unexpected behavior when catching exceptions.",
+      "suggestion": "Rename to BotTimeoutError or DiscordTimeoutError to avoid shadowing the built-in exception."
+    },
+    {
+      "severity": "minor",
+      "file": "src/retry_strategy.py",
+      "description": "The execute_with_retry method has both 'retryable_exceptions' and 'retry_on' parameters that do the same thing. While documented as deprecated, having both parameters increases API surface complexity.",
+      "suggestion": "Consider removing the deprecated 'retry_on' parameter in a future version to simplify the API. Document the deprecation with a warning."
+    },
+    {
+      "severity": "minor",
+      "file": "bot/utils/logger.py",
+      "description": "Logger setup suppresses third-party library logs to WARNING level (lines 91-97) which might hide important information during debugging. The list is hardcoded and may need updates as dependencies change.",
+      "suggestion": "Consider making third-party log levels configurable through the setup_logger function parameters, or document this behavior clearly in the README."
+    },
+    {
+      "severity": "minor",
+      "file": "src/llm/circuit_breaker.py",
+      "description": "CircuitBreaker.call() uses lock acquisition before checking state, which could cause unnecessary lock contention. Lock is held during the entire state check.",
+      "suggestion": "Consider checking state without lock first (read-only check), then acquire lock only if state transition is needed. This is a performance optimization for high-concurrency scenarios."
+    },
+    {
+      "severity": "minor",
+      "file": "src/llm/base.py",
+      "description": "Type hints use pipe operator (|) for unions (e.g., 'str | None') which requires Python 3.10+. This should be documented in README or requirements to avoid compatibility issues.",
+      "suggestion": "Document minimum Python version as 3.10+ in README and setup.py/pyproject.toml, or use typing.Union for Python 3.9 compatibility."
+    },
+    {
+      "severity": "minor",
+      "file": "Dockerfile",
+      "description": "Healthcheck uses basic urllib which might not handle connection errors gracefully. The curl command would be more robust but requires installing curl.",
+      "suggestion": "Consider adding error handling to the healthcheck or install curl in the image for more reliable health checks: 'curl -f http://localhost:8000/health || exit 1'"
+    }
+  ],
+  "summary": "The discord-ai-bot-czech project demonstrates solid software engineering practices with well-structured code, good separation of concerns, and comprehensive error handling. The retry strategy and circuit breaker implementations are particularly well-designed with proper async/await patterns. However, the requirements.txt file contains critical errors with invalid package names that would prevent installation. The codebase shows good documentation, proper use of type hints, and follows Python best practices. Security considerations are present with proper user separation in Docker and environment variable handling. Test coverage exists with 31 test files. Once the requirements.txt issues are fixed, this would be a production-ready implementation. Score: 72/100 - Approved with requirement to fix dependency issues."
+}
